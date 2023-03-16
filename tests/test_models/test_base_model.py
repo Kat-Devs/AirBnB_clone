@@ -3,6 +3,7 @@
 import unittest
 from datetime import datetime
 from models.base_model import BaseModel
+import uuid
 
 class TestBaseModel(unittest.TestCase):
     def setUp(self):
@@ -36,11 +37,24 @@ class TestBaseModel(unittest.TestCase):
         ''' Test __class__ attribute for correctness'''
         self.assertEqual(self.model.to_dict()['__class__'], 'BaseModel')
 
-        ''' Test taht created_at and updated_at attributes are iso format'''
+        ''' Test that created_at and updated_at attributes are iso format'''
         self.assertIsInstance(self.model.to_dict()['created_at'], str)
         self.assertIsInstance(self.model.to_dict()['updated_at'], str)
         datetime.strptime(self.model.to_dict()['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
         datetime.strptime(self.model.to_dict()['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
+
+    def test_init_with_dict(self):
+        """Test initialization of BaseModel instance from dictionary"""
+        bm_dict = {'id': str(uuid.uuid4()),
+                   'created_at': datetime.now().isoformat(),
+                   'updated_at': datetime.now().isoformat(),
+                   '__class__': 'BaseModel'}
+        bm = BaseModel(**bm_dict)
+        self.assertIsInstance(bm, BaseModel)
+        self.assertEqual(bm.id, bm_dict['id'])
+        self.assertEqual(bm.created_at, datetime.fromisoformat(bm_dict['created_at']))
+        self.assertEqual(bm.updated_at, datetime.fromisoformat(bm_dict['updated_at']))
+
 
 if __name__ == '__main__':
     unittest.main()
