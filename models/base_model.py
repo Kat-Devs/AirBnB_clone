@@ -4,11 +4,6 @@ import uuid
 from datetime import datetime
 from models import storage
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 222d740279c5e4b51e27246e80455b5afd0d67e1
 class BaseModel:
     '''
     Base class for other models to inherit from.
@@ -16,7 +11,12 @@ class BaseModel:
     '''
 
     def __init__(self, *args, **kwargs):
-        ''' Inits a new instance of BaseModel'''
+        ''' 
+        Inits a new instance of BaseModel class
+        Args:
+            *args: argument list
+            **kwargs: keyword arguments
+        '''
         if kwargs:
             for key, value in kwargs.items():
                 if key != '__class__':
@@ -25,8 +25,7 @@ class BaseModel:
                     setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
         ''' Returns string rep of instance'''
@@ -35,7 +34,7 @@ class BaseModel:
     def save(self):
         ''' Update updated_at with current datetime'''
         self.updated_at = datetime.now()
-        storage.save()
+    
 
     def to_dict(self):
         ''' Returns dict rep of instance
