@@ -12,7 +12,7 @@ class FileStorage:
     '''
     __file_path = "file.json"
     __objects = {}
-    models = {
+    __classes = {
         "BaseModel": BaseModel, 
         "User": User}
 
@@ -22,13 +22,11 @@ class FileStorage:
         '''
         if cls is None:
             return self.__objects
-        else:
-            if isinstance(cls,str):
-                cls = self.models[cls]
-            key_list = [key for key in self.__objects.keys()\
-                        if type(self.__objects[key]) == cls]
-            new_dict = {key: self.__objects[key] for key in key_list}
-            return new_dict
+        
+        if isinstance(cls, str):
+            cls = self.__classes.get(cls)
+
+        return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
 
     def new(self, obj):
         '''
@@ -43,13 +41,24 @@ class FileStorage:
         Serializes __objects to JSON file
         (path: __File_path)
         '''
-        new_dict = {}
-        for key, value in self.__objects.items():
-            new_dict[key] = value.to_dict()
-        with open(self.__file_path, mode="w",encoding="utf-8") as f:
-            json.dump(new_dict, f)
+        with open(self.__file_path, mode="w", encoding="utf-8") as f:
+            obj_dict = {k: v.to_dict() for k, v in self.__objects.items()}
+            json.dump(obj_dict, f)
 
     def reload(self):
+        try:
+            with open(self.__file_path, mode="r", encoding="utf-8") as f:
+                obj_dict = json.load(f)
+                for key, value in obj_dict.items():
+                    cls_name = value["__class__"]
+                    if cls_name in self.__classes:
+                        cls = self.__classes[cls_name]
+                        instance = cls(**value)
+                        self.__objects[key] = instance
+        except FileNotFoundError:
+            pass 
+
+    """ def reload(self):
         '''
         Deserialize JSON file to __objects if file exists
         '''
@@ -70,4 +79,4 @@ class FileStorage:
                         # corresponding data and add it to __objects
                         cls = models.__dict__[cls_name]
                         instance = cls(**value)
-                        self.__objects[key] = instance
+                        self.__objects[key] = instance """
