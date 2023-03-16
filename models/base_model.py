@@ -4,6 +4,11 @@ import uuid
 from datetime import datetime
 from models import storage
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 222d740279c5e4b51e27246e80455b5afd0d67e1
 class BaseModel:
     '''
     Base class for other models to inherit from.
