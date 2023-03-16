@@ -2,6 +2,8 @@
 import json
 import os
 import models
+from models.base_model import BaseModel
+from models.user import User
 
 class FileStorage:
     '''
@@ -10,12 +12,23 @@ class FileStorage:
     '''
     __file_path = "file.json"
     __objects = {}
+    models = {
+        "BaseModel": BaseModel, 
+        "User": User}
 
-    def all(self):
+    def all(self, cls=None):
         '''
         Returns __objects dict
         '''
-        return self.__objects
+        if cls is None:
+            return self.__objects
+        else:
+            if isinstance(cls,str):
+                cls = self.models[cls]
+            key_list = [key for key in self.__objects.keys()\
+                        if type(self.__objects[key]) == cls]
+            new_dict = {key: self.__objects[key] for key in key_list}
+            return new_dict
 
     def new(self, obj):
         '''
