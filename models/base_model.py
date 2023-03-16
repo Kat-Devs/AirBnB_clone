@@ -5,6 +5,7 @@ from datetime import datetime
 from models import storage
 
 
+
 class BaseModel:
     '''
     Base class for other models to inherit from.
