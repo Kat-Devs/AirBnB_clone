@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import json
-from models.base_model import BaseModel
 
 class FileStorage:
     '''
@@ -15,10 +14,10 @@ class FileStorage:
         Returns __objects dict
         '''
         return self.__objects
-    
+
     def new(self, obj):
         '''
-        Sets obj with key <obj class name>.id in 
+        Sets obj with key <obj class name>.id in
         __objects
         '''
         key = f'{obj.__class__.__name__}.{obj.id}'
@@ -26,7 +25,7 @@ class FileStorage:
 
     def save(self):
         '''
-        Serializes __objects to JSON file 
+        Serializes __objects to JSON file
         (path: __File_path)
         '''
         new_dict = {}
@@ -43,8 +42,8 @@ class FileStorage:
             with open(self.__file_path, mode="r",encoding="utf-8") as f:
                 new_dict = json.load(f)
                 for key, value in new_dict.items():
-                    cls_name = key.split('.')[0]
-                    obj = eval(cls_name)(**value)
-                    self.__objects[key] = obj
+                    module = __import__('models.base_model' + key.split('.')[0], fromlist=[key.split('.')[0]])
+                    cls = getattr(module, key.split('.')[0])
+                    self.__objects[key] = cls(**value)
         except FileNotFoundError:
-            pass
+            pass  
