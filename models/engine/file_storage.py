@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import json
+import os
+import models
 
 class FileStorage:
     '''
@@ -34,17 +36,16 @@ class FileStorage:
         with open(self.__file_path, mode="w",encoding="utf-8") as f:
             json.dump(new_dict, f)
 
-    """ def reload(self):
+    def reload(self):
         '''
-        Deserializes JSON file to __objects
+        Deserialize JSON file to __objects if file exists
         '''
-        try:
-            with open(self.__file_path, mode="r",encoding="utf-8") as f:
-                new_dict = json.load(f)
-                for key, value in new_dict.items():
-                    cls_name = value['__class__']
-                    cls = eval(cls_name)
-                    obj = cls(**value)
-                    self.__objects[key] = obj
-        except FileNotFoundError:
-            pass   """
+        if os.path.exists(self.__file_path):
+            with open(self.__file_path, "r", encoding="utf-8") as f:
+                json_data = json.load(f)
+                for key, value in json_data.items():
+                    cls_name = key.split('.')[0]
+                    if cls_name in models.__dict__:
+                        cls = models.__dict__[cls_name]
+                        instance = cls(**value)
+                        self.__objects[key] = instance
