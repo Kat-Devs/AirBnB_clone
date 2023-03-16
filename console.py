@@ -4,7 +4,7 @@ Entry point for HBNBCommand intepreter
 '''
 
 import cmd
-from models import *
+import models
 from models.base_model import BaseModel
 from models import storage
 
@@ -92,15 +92,16 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, arg):
         """Prints all string representation of all instances"""
         args = arg.split()
-        if len(args) == 0:
-            instances = storage.all()
-        else:
-            class_name = args[0]
-            if class_name not in class_dict:
-                print("** class doesn't exist **")
-                return
-            instances = storage.all(class_name)
-        print([str(instance) for instance in instances.values()])
+        objs = models.storage.all()
+        if not args:
+            print([str(objs[obj]) for obj in objs])
+            return
+        try:
+            cls = eval(args[0])
+        except:
+            print("** class doesn't exist **")
+            return
+        print([str(objs[obj]) for obj in objs if type(objs[obj]) == cls])
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
