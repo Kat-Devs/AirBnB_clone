@@ -40,12 +40,21 @@ class FileStorage:
         '''
         Deserialize JSON file to __objects if file exists
         '''
+        # Check if JSON file exists
         if os.path.exists(self.__file_path):
+            # Open the JSON file and load its contents into __objects
             with open(self.__file_path, "r", encoding="utf-8") as f:
+                # Deserialize the JSON data and store it in a temporary variable
                 json_data = json.load(f)
+                # Loop through the deserialized data and create instances of the
+                # corresponding class for each object
                 for key, value in json_data.items():
+                     # Extract the class name from the key and check if it exists in
+                    # the models module's namespace
                     cls_name = key.split('.')[0]
                     if cls_name in models.__dict__:
+                         # If the class exists, create an instance of it with the
+                        # corresponding data and add it to __objects
                         cls = models.__dict__[cls_name]
                         instance = cls(**value)
                         self.__objects[key] = instance
