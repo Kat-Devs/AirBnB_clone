@@ -4,6 +4,7 @@ Entry point for HBNBCommand intepreter
 '''
 
 import cmd
+from models import *
 from models.base_model import BaseModel
 from models import storage
 
