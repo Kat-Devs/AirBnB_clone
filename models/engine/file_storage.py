@@ -42,8 +42,8 @@ class FileStorage:
             with open(self.__file_path, mode="r",encoding="utf-8") as f:
                 new_dict = json.load(f)
                 for key, value in new_dict.items():
-                    module = __import__('models.' + key.split('.')[0], fromlist=[key.split('.')[0]])
-                    cls = getattr(module, key.split('.')[0])
-                    self.__objects[key] = cls(**value)
+                    cls_name = key.split('.')[0]
+                    obj = eval(cls_name)(**value)
+                    self.__objects[key] = obj
         except FileNotFoundError:
             pass
