@@ -2,8 +2,7 @@
 """Entry point of the command interpreter"""
 
 import cmd
-import shlex
-import models
+
 
 
 class HBNBCommand(cmd.Cmd):
@@ -21,21 +20,6 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """Called when an empty line is entered"""
         pass
-
-    def do_create(self, arg):
-        """Creates a new instance of a BaseModel"""
-        args = shlex.split(arg)
-        if len(args) < 1:
-            print("** class name missing **")
-            return
-        try:
-            cls = models.__dict__[args[0]]
-        except KeyError:
-            print("** class doesn't exist **")
-            return
-        instance = cls()
-        instance.save()
-        print(instance.id)
 
 
 if __name__ == '__main__':
