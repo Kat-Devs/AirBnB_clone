@@ -5,6 +5,7 @@ base_model.py - BaseModel class source code
 
 import uuid
 import datetime
+from models import storage
 
 
 class BaseModel:
@@ -22,6 +23,7 @@ class BaseModel:
                     if key in ['created_at', 'updated_at']:
                         value = datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
                     setattr(self, key, value)
+                    storage.save()
 
     def __str__(self):
         """Return a string representation of the BaseModel instance"""
@@ -31,6 +33,7 @@ class BaseModel:
     def save(self):
         """Update the updated_at attribute with the current datetime"""
         self.updated_at = datetime.datetime.now()
+        storage.save()
 
     def to_dict(self):
         """Return a dictionary representation of the BaseModel instance"""
