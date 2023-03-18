@@ -7,6 +7,7 @@ import uuid
 import datetime
 
 
+
 class BaseModel:
     """Base class for other models"""
 
@@ -31,6 +32,7 @@ class BaseModel:
     def save(self):
         """Update the updated_at attribute with the current datetime"""
         self.updated_at = datetime.datetime.now()
+
 
     def to_dict(self):
         """Return a dictionary representation of the BaseModel instance"""
