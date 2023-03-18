@@ -1,121 +1,64 @@
 #!/usr/bin/python3
-'''
-Entry point for HBNBCommand intepreter
-'''
+"""Entry point of the command interpreter"""
 
 import cmd
-from models import *
-from models.base_model import BaseModel
-from models import storage
-
-class_dict = {
-    "BaseModel": BaseModel
-}
+import shlex
+import models
 
 
 class HBNBCommand(cmd.Cmd):
-    '''
-    Command Intepreter Class
-    '''
-    prompt = '(hbnb) '
+    prompt = "(hbnb) "
 
-    def do_quit(self, args):
-        '''Quit command to exit program'''
+    def do_quit(self, arg):
+        """Quit command to exit the program"""
         return True
-    
-    def do_EOF(self, args):
-        '''EOF command to exit the program'''
+
+    def do_EOF(self, arg):
+        """EOF command to exit the program"""
         print()
         return True
-    
+
     def emptyline(self):
-        '''Do nothing on empty line'''
+        """Called when an empty line is entered"""
         pass
 
     def do_create(self, arg):
-        '''Creates a new instance of BaseModel'''
-        if not arg:
-            print('** class name missing **')
+        """Creates a new instance of a BaseModel"""
+        args = shlex.split(arg)
+        if len(args) < 1:
+            print("** class name missing **")
             return
-        args = arg.split()
-        class_name = args[0]
-        if class_name not in class_dict:
-            print('** class does not exist **')
+        try:
+            cls = models.__dict__[args[0]]
+        except KeyError:
+            print("** class doesn't exist **")
             return
-        instance = class_dict[class_name]()
+        instance = cls()
         instance.save()
         print(instance.id)
 
-        def do_show(self, arg):
-            '''Prints string representation of an instance'''
-            if not arg:
-                print("** class doesn't exist **")
-                return
-            args = arg.split()
-            class_name = args[0]
-            if class_name not in class_dict:
-                print("** class doesn't exist **")
-                return
-            if len(args) < 2:
-                print('** instance id missing')
-                return
-            instance_id = args[1]
-            key = f'{class_name}.{instance_id}'
-            instances = storage.all()
-            if key not in instances:
-                print('** no instance found **')
-                return
-            print(instances[key])
-
-        def do_destroy(self, arg):
-            """Deletes an instance based on the class name and id"""
-            if not arg:
-                print("** class name missing **")
-                return
-            args = arg.split()
-            class_name = args[0]
-            if class_name not in class_dict:
-                print("** class doesn't exist **")
-                return
-            if len(args) < 2:
-                print("** instance id missing **")
-                return
-            instance_id = args[1]
-            key = "{}.{}".format(class_name, instance_id)
-            instances = storage.all()
-            if key not in instances:
-                print("** no instance found **")
-                return
-            del instances[key]
-            storage.save()
-
-        def do_all(self, arg):
-            """Prints all string representation of all instances"""
-            args = arg.split()
-            if len(args) == 0:
-                instances = storage.all()
-            else:
-                class_name = args[0]
-                if class_name not in class_dict:
-                    print("** class doesn't exist **")
-                    return
-                instances = storage.all(class_name)
-            print([str(instance) for instance in instances.values()])
-
-        def do_update(self, arg):
-            """Updates an instance based on the class name and id"""
-            if not arg:
-                print("** class name missing **")
-                return
-            args = arg.split()
-            class_name = args[0]
-            if class_name not in class_dict:
-                print("** class doesn't exist **")
-                return
-            if len(args) < 2:
-                print("** instance id missing **")
-                return
-            instance_id = args[1]
+    def do_show(self, arg):
+        """Prints the string representation of an instance based on the class
+        name and id"""
+        args = shlex.split(arg)
+        if len(args) < 1:
+            print("** class name missing **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        try:
+            cls = models.__dict__[args[0]]
+        except KeyError:
+            print("** class doesn't exist **")
+            return
+        instance_id = args[1]
+        key = "{}.{}".format(cls.__name__, instance_id)
+        if key in models.storage.all(cls):
+            instance = models.storage.all(cls)[key]
+            print(instance)
+        else:
+            print
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
