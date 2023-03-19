@@ -9,3 +9,7 @@ class State(BaseModel):
     """
 
     name = ""
+
+    def __init__(self, *args, **kwargs):
+        """ Initialize User instance """
+        super().__init__(*args, **kwargs)
