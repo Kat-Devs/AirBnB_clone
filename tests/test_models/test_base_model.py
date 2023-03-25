@@ -1,48 +1,49 @@
-import datetime
+#!/usr/bin/python3
+""" Module of Unittests """
 import unittest
 from models.base_model import BaseModel
+import os
+from models import storage
+from models.engine.file_storage import FileStorage
+import datetime
 
 
-class TestBaseModel(unittest.TestCase):
-    """Test cases for the BaseModel class"""
+class BaseModelTests(unittest.TestCase):
+    """ Suite of Console Tests """
 
-    def setUp(self):
-        """Create a new instance of the BaseModel class"""
-        self.base_model = BaseModel()
+    my_model = BaseModel()
 
-    def test_id(self):
-        """Test that the id attribute is a string and 
-        is unique"""
-        
-        self.assertIsInstance(self.base_model.id, str)
-        self.assertIsNotNone(self.base_model.id)
+    def testBaseModel1(self):
+        """ Test attributes value of a BaseModel instance """
 
-    def test_created_at(self):
-        """Test that the created_at attribute is a datetime object"""
-        self.assertIsInstance(self.base_model.created_at, datetime.datetime)
-        self.assertIsNotNone(self.base_model.created_at)
+        self.my_model.name = "Holberton"
+        self.my_model.my_number = 89
+        self.my_model.save()
+        my_model_json = self.my_model.to_dict()
 
-    def test_updated_at(self):
-        """Test that the updated_at attribute is a datetime object"""
-        self.assertIsInstance(self.base_model.updated_at, datetime.datetime)
-        self.assertIsNotNone(self.base_model.updated_at)
+        self.assertEqual(self.my_model.name, my_model_json['name'])
+        self.assertEqual(self.my_model.my_number, my_model_json['my_number'])
+        self.assertEqual('BaseModel', my_model_json['__class__'])
+        self.assertEqual(self.my_model.id, my_model_json['id'])
 
-    def test_save(self):
-        """Test that the save method updates the updated_at attribute"""
-        old_updated_at = self.base_model.updated_at
-        self.base_model.save()
-        new_updated_at = self.base_model.updated_at
-        self.assertNotEqual(old_updated_at, new_updated_at)
+    def testSave(self):
+        """ Checks if save method updates the public instance instance
+        attribute updated_at """
+        self.my_model.first_name = "First"
+        self.my_model.save()
 
-    def test_to_dict(self):
-        """Test that the to_dict method returns a dictionary"""
-        obj_dict = self.base_model.to_dict()
-        self.assertIsInstance(obj_dict, dict)
-        self.assertEqual(obj_dict["name"], "test_model")
-        self.assertEqual(obj_dict["__class__"], "BaseModel")
-        self.assertIsInstance(obj_dict["id"], str)
-        self.assertIsInstance(obj_dict["created_at"], str)
-        self.assertIsInstance(obj_dict["updated_at"], str)
+        self.assertIsInstance(self.my_model.id, str)
+        self.assertIsInstance(self.my_model.created_at, datetime.datetime)
+        self.assertIsInstance(self.my_model.updated_at, datetime.datetime)
+
+        first_dict = self.my_model.to_dict()
+
+        self.my_model.first_name = "Second"
+        self.my_model.save()
+        sec_dict = self.my_model.to_dict()
+
+        self.assertEqual(first_dict['created_at'], sec_dict['created_at'])
+        self.assertNotEqual(first_dict['updated_at'], sec_dict['updated_at'])
 
 if __name__ == '__main__':
     unittest.main()
