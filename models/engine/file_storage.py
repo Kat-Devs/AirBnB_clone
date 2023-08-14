@@ -6,7 +6,8 @@ import json
 
 class FileStorage:
     """Class for serializing and deserializing JSON, to instances"""
-    __file_path = 'file.json'
+
+    __file_path = "file.json"
     __objects = {}
 
     def all(self):
@@ -20,12 +21,11 @@ class FileStorage:
 
     def save(self):
         """Serializes __objects to the JSON file (path: __file_path)"""
-        with open(FileStorage.__file_path, 'w') as f:
+        with open(FileStorage.__file_path, "w") as f:
             temp = {}
             for key, val in FileStorage.__objects.items():
                 temp[key] = val.to_dict()
             json.dump(temp, f)
-
 
     def reload(self):
         """Deserializes the JSON file to __objects"""
@@ -37,21 +37,20 @@ class FileStorage:
         from models.review import Review
         from models.state import State
 
-
         classes = {
-                    'BaseModel': BaseModel, 
-                    'User': User,
-                    'Amenity': Amenity,
-                    'City': City,
-                    'Place': Place,
-                    'Review': Review,
-                    'State': State
-                    }
+            "BaseModel": BaseModel,
+            "User": User,
+            "Amenity": Amenity,
+            "City": City,
+            "Place": Place,
+            "Review": Review,
+            "State": State,
+        }
         try:
             temp = {}
-            with open(FileStorage.__file_path, 'r') as f:
+            with open(FileStorage.__file_path, "r") as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val["__class__"]](**val)
         except FileNotFoundError:
             pass
